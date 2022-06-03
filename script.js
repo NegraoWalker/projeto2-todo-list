@@ -1,9 +1,13 @@
 /*Vamos simular em primeiro momento um banco de dados que vai receber as tarefas digitadas pela user e no final integrar isso com o localStorage */
-let banco = [
-    { "tarefa": "Estudar programação", "status": "" },
-    { "tarefa": "Passar no mercado", "status": "checked" },
-    { "tarefa": "teste", "status": "checked" }
-]
+/*let banco = [
+    {"tarefa": "Estudar JS", "status": ""},
+    {"tarefa": "Passar no mercado", "status": "checked"}
+] */
+
+const getBanco = () => JSON.parse(localStorage.getItem("todoList")) ?? [] // Função para pegar do banco de dados dentro do localStorage
+const setBanco = (banco) => localStorage.setItem("todoList", JSON.stringify(banco)) //Função para atualizar o banco de dados dentro do localStorage
+
+//O localStorage só recebe dados no formato de string. Assim temos que transformar nosso banco que é um array de objetos em string para enviar e para receber tranformamos de volta para array de objetos JSON.
 
 /*Base de código que tenho que criar dinamicamente para adicionar uma nova tarefa: */
 /* <label class="todo-item">
@@ -33,6 +37,7 @@ const limparTarefas = () => { //Função utilizada para que a exibição na tela
 
 const atualizarTela = () => { //Função que verifica o nosso banco de dados e atualiza a tela com as novas tarefas
     limparTarefas()
+    const banco = getBanco()
     banco.forEach((item, indice) => criarItem(item.tarefa, item.status, indice)) //Percorro meu banco de dados através do laço e pego cada tarefa adicionada do banco e mando para função criar item. E como parâmetros para a exibição passo o nome da tarefa e o status da mesma e o indice do array(para verificar em qual elemento HTML eu cliquei com a função clickItem)
 
 }
@@ -41,19 +46,25 @@ const inserirItem = (event) => {
     const tecla = event.key //Capturando a tecla que foi apertada
     const texto = event.target.value //Capturando o valor do texto digitado no input antes do enter
     if (tecla === "Enter") { //Verificando se a tecla apertada no evento é enter
+        const banco = getBanco()
         banco.push({ "tarefa": texto, "status": "" }) //Vou atualizar meu banco adicionando o texto digitado e o status
+        setBanco(banco)
         atualizarTela() // Depois dou um atualizarTela para mostrar as modificações
         event.target.value = ""//Limpando o texto que ficou após apertar enter no input de adicionar tarefa
     }
 }
 
 const removerItem = (indice) => {
+    const banco = getBanco()
     banco.splice(indice, 1) //Utilizo o método splice para remover a tarefa do banco armazenada a partir do indice passado e soment ela por isso o 1
+    setBanco(banco)
     atualizarTela()
 }
 
 const atualizarItem = (indice) => {
+    const banco = getBanco()
     banco[indice].status = banco[indice].status === "" ? "checked" : "" //Passo o indice para o banco de dados para selecionar a tarefa respectiva armazenada e verifico se o status está checked se estiver vira vazio e senão fica marcado
+    setBanco(banco)
     atualizarTela() // Atualizo a tela
 }
 
